@@ -3,6 +3,7 @@ testpaths = ["tests"]
 pythonpath = ["."]
 addopts = "-q"
 markers = [
+    "live: calls the real Gemini API; skipped unless GEMINI_API_KEY is set.",
     "slow: takes about a minute (real OCR on rendered images).",
     "known_residual: a documented, accepted weakness. Expected to fail; strict xfail turns an unexpected pass into an alert.",
 ]

@@ -44,3 +44,9 @@ data:            ## regenerate datasets
 
 api:             ## start the REST API on :8000
 	python -m uvicorn app.api:app --port 8000
+
+gemini-check:
+	python scripts/check_gemini.py
+
+eval-gemini:
+	python run_evals.py --llm gemini --judge gemini --quick

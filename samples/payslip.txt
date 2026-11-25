@@ -1,0 +1,6 @@
+Initech - PAYSLIP
+Employee Name: Ana Silva
+Employer: Initech
+Pay Period: March 2026
+Gross Pay: USD 8,500.00
+Net Pay: USD 6,100.00

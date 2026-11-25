@@ -2,7 +2,9 @@
 import json
 
 from app.llm import FaultInjectingLLM, MockLLM
-from conftest import doc
+from app.agent import DocumentIntakeAgent
+from app.tools import ToolBox
+from conftest import AS_OF, GOLDEN, doc
 
 
 class StubLLM:
@@ -159,3 +161,23 @@ def test_without_guardrails_the_same_model_creates_a_bad_case(make_agent):
     r = unguarded.process(d["id"], d["text"])
     assert r.status == "case_created"
     assert tools_u.get_case(d["id"])["fields"]["expiry_date"] == "2030-01-01"  # made up
+
+
+def test_extract_request_names_the_exact_fields_to_return():
+    """Found by running real Gemini: with no field list it answered `beneficiary_name`, the agent ignored the key,
+    and a valid visa notice was flagged for a missing full_name. The request must spell out the field names."""
+    from app.schemas import REQUIRED_FIELDS
+    seen = []
+
+    class Spy(MockLLM):
+        def generate(self, system, user):
+            seen.append(user)
+            return super().generate(system, user)
+
+    agent = DocumentIntakeAgent(Spy("v1"), toolbox=ToolBox(), as_of=AS_OF)
+    for d in GOLDEN:
+        agent.process(d["id"], d["text"])
+    extract = [u for u in seen if u.startswith("TASK: extract")]
+    assert extract and all("FIELD_NAMES: " in u for u in extract if "CATEGORY: unknown" not in u)
+    visa = next(u for u in extract if "CATEGORY: visa_approval" in u)
+    assert json.dumps(REQUIRED_FIELDS["visa_approval"]) in visa

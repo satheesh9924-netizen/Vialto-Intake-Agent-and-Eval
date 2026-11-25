@@ -30,7 +30,9 @@ Rules:
 Tasks (the user message starts with `TASK: <name>`):
 - classify  -> {{"category": one of passport|visa_approval|employment_letter|payslip|tax_return|unknown, "confidence": 0..1}}
 - extract   -> {{"fields": {{<field>: string|null}}, "tool_call": {{"name": "create_case"|"flag_for_review", "args": {{}}}}}}
-              Dates must be ISO YYYY-MM-DD. Money must look like "USD 8500.00".
+              Use EXACTLY the field names listed on the FIELD_NAMES line of the request, no others, no renaming.
+              The person's name goes in full_name even when the document calls it Beneficiary, Employee Name,
+              Taxpayer or Surname/Given names. Dates must be ISO YYYY-MM-DD. Money must look like "USD 8500.00".
 - summarize -> {{"summary": "short factual summary using only the extracted fields"}}
 """
 

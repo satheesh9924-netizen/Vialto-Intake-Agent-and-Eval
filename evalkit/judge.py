@@ -8,6 +8,7 @@ measure agreement (Cohen's kappa) before trusting it. See `calibrate`.
 
 * HeuristicJudge - offline, rule-based stand-in (also a cheap first filter in real pipelines).
 * ClaudeJudge    - LLM judge with an explicit rubric, temperature 0, JSON output.
+* GeminiJudge    - the same rubric graded by Gemini (free key), temperature 0, JSON output.
 """
 import json
 import os
@@ -72,6 +73,24 @@ class ClaudeJudge:
                                            messages=[{"role": "user", "content": msg}])
         data = json.loads("".join(b.text for b in resp.content if getattr(b, "type", "") == "text"))
         return _verdict(int(data["faithfulness"]), int(data["completeness"]), int(data["safety"]), data.get("rationale", ""))
+
+
+class GeminiJudge:
+    name = "gemini-judge"
+
+    def __init__(self, model: str | None = None, client=None):
+        from app.gemini import GeminiClient
+        self.client = client or GeminiClient(model)
+
+    def score(self, doc_text, summary, fields):
+        msg = f"SOURCE:\n{doc_text}\n\nFIELDS: {json.dumps(fields)}\n\nSUMMARY: {summary}"
+        raw = self.client.generate(RUBRIC, msg, max_tokens=600)
+        try:
+            data = json.loads(raw)
+            return _verdict(int(data["faithfulness"]), int(data["completeness"]), int(data["safety"]),
+                            data.get("rationale", ""))
+        except (ValueError, KeyError, TypeError):  # judge returned unusable output: fail closed, say why
+            return _verdict(1, 1, 1, f"judge returned unusable output: {raw[:80]!r}")
 
 
 def calibrate(judge, calibration_rows, golden_by_id, kappa_floor=0.6):

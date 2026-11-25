@@ -26,6 +26,9 @@ def make_llm(kind: str, profile: str):
     if kind == "claude":
         from app.llm import ClaudeLLM
         return ClaudeLLM()
+    if kind == "gemini":
+        from app.gemini import GeminiLLM
+        return GeminiLLM()
     return MockLLM(profile)
 
 
@@ -137,8 +140,13 @@ def full_eval(profile: str = "v1", llm_kind: str = "mock", the_judge=None, agent
     }
 
 
-def load_baseline():
-    p = ROOT / "data/baseline/baseline.json"
+def baseline_path(llm_kind: str = "mock") -> pathlib.Path:
+    """A real model gets its own baseline: comparing it with the mock's numbers would be meaningless."""
+    return ROOT / ("data/baseline/baseline.json" if llm_kind == "mock" else f"data/baseline/baseline-{llm_kind}.json")
+
+
+def load_baseline(llm_kind: str = "mock"):
+    p = baseline_path(llm_kind)
     return json.loads(p.read_text()) if p.exists() else None
 
 

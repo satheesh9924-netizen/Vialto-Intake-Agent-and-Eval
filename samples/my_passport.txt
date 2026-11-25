@@ -1,0 +1,7 @@
+PASSPORT
+Full name: Ana Silva
+Passport number: P1234567
+Nationality: Portuguese
+Date of birth: 1990-01-02
+Expiry date: 2031-05-06
+Issuing country: Portugal

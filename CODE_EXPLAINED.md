@@ -369,3 +369,21 @@ Legend: ✅ built and run here · 🟡 built, tested only against stubs/offline 
 6. *"Why LangGraph?"* Same logic in two wirings; the graph makes flow explicit and drawable; parity tests prove equivalence.
 7. *"What did testing teach you?"* The OCR story.
 8. *"What would you do next?"* Real-model run, SME-labelled data, LLM judge, vision-model comparison, check-digit validation, a second model as verifier.
+
+
+---
+
+## Real model: `app/gemini.py` (added later)
+
+**What it is.** `GeminiLLM` is one more model behind the same `generate(system, user) -> str` shape, so the agent, the guardrails and every evaluation run unchanged. It talks to Google's REST API with `httpx`; no extra SDK.
+
+**The three things that make a free key usable** (say these in the interview):
+1. **Throttle**: one shared limiter spaces real requests (`GEMINI_RPM`, default 10 per minute).
+2. **Retry**: a rate-limit answer (HTTP 429) or server error is retried with backoff. A *daily* quota that is used up raises `GeminiQuotaExhausted` and stops the run, because silently flagging every document would produce misleading metrics. A wrong key or model name raises `GeminiConfigError` immediately.
+3. **Cache**: each reply is stored on disk, so a re-run costs nothing and gives identical numbers. The cache key counts "the Nth time this client asked this exact question", so the consistency test (same input, several runs) still gets genuinely different samples instead of one answer copied.
+
+**`GeminiJudge`** (in `evalkit/judge.py`) grades summaries with the same rubric as the Claude judge. If the judge returns something unreadable it scores 1/1/1, so an unreadable verdict can never pass.
+
+**Why a separate baseline.** The mock's numbers (97% accuracy) say nothing about Gemini. `baseline-gemini.json` keeps drift detection honest: later Gemini runs are compared with an earlier Gemini run, which is exactly the "monitor quality over time" story.
+
+**Honest status.** Everything here is tested against a fake Gemini server (`tests/test_gemini.py`). A live test exists (`RUN_LIVE=1`) but the first real run is yours.

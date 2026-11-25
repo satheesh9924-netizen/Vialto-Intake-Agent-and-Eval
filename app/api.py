@@ -17,6 +17,9 @@ class IntakeRequest(BaseModel):
 def create_app(db_path: str | None = None, llm=None) -> FastAPI:
     app = FastAPI(title="VLabs document intake (sample)")
     tools = ToolBox(db_path or os.getenv("INTAKE_DB", ":memory:"))
+    if llm is None and os.getenv("INTAKE_LLM", "mock").lower() == "gemini":   # INTAKE_LLM=gemini uses the real model
+        from .gemini import GeminiLLM
+        llm = GeminiLLM()
     agent = DocumentIntakeAgent(llm or MockLLM("v1"), toolbox=tools)
     app.state.tools, app.state.agent = tools, agent
 

@@ -91,3 +91,21 @@ python run_evals.py --llm claude --judge claude --out results/claude
   - Not built: vision-language-model (VLM) testing.
 - **OCR finding:** real OCR swaps look-alike characters (`O`/`0`, `Z`/`2`, `B`/`8`). Closed-list validators fixed visa types and currency codes (wrong data stored on clean scans: 3% to 0%). Look-alike swaps inside free-form IDs remain (up to 12% on rotated scans) and are recorded as strict expected failures; a check digit or OCR confidence score is the fix.
 - **Free-text summaries are protected by the judge, not the guardrails:** the degraded model's invented sentence still reaches the summary text; the judge scores it 0% pass.
+
+
+## Running on a real model (Gemini, free key)
+
+```
+export GEMINI_API_KEY=...            # free key from https://aistudio.google.com
+make gemini-check                    # lists the models your key can use and makes one real call
+export GEMINI_MODEL=<a name from that list>     # optional; default is gemini-flash-lite-latest
+make eval-gemini                     # = python run_evals.py --llm gemini --judge gemini --quick
+make test-fast                       # with the key set, the live Gemini tests run too (5 small calls, cached)
+```
+
+What changes with a real model:
+* The numbers are real, so expect misses (wrong labels, invented values, ignored injections). That is the point of the evals.
+* A real model gets its own baseline (`data/baseline/baseline-gemini.json`) and its own results folder (`results/gemini`). Freeze it with `python run_evals.py --llm gemini --judge gemini --update-baseline` once you accept a run as the reference.
+* `GEMINI_RPM` (default 10) limits requests per minute so a free key is not exhausted. A full run is several hundred calls; `--quick` halves that.
+* Replies are cached in `.cache/gemini`. If a run stops (rate limit, daily quota), run the same command again and it continues from where it stopped without repeating paid or free calls. `GEMINI_CACHE=off` disables the cache.
+* All documents in this repo are synthetic. Free-tier prompts may be used by Google to improve its products, so never send real documents.

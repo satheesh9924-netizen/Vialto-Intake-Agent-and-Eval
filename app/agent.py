@@ -83,6 +83,8 @@ class DocumentIntakeAgent:
         user = f"TASK: {task}\n"
         if category:
             user += f"CATEGORY: {category}\n"
+        if task == "extract" and category in REQUIRED_FIELDS:   # tell the model the exact keys to use
+            user += f"FIELD_NAMES: {json.dumps(REQUIRED_FIELDS[category])}\n"
         if fields is not None:
             user += f"FIELDS: {json.dumps(fields)}\n"
         user += f"<<<DOC\n{doc}\nDOC>>>"

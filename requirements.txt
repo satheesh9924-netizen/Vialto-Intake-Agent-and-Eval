@@ -25,4 +25,4 @@ boto3>=1.34
 openai>=1.50
 
 # --- optional: real Claude model and judge (run_evals.py --llm claude --judge claude)
-# anthropic>=0.40
+# anthropic>=0.40   (Gemini needs nothing extra: it uses httpx, already above)
