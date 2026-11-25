@@ -1,0 +1,1 @@
+{"name":"vlabs-eval-tools","private":true,"description":"Node-based tools: promptfoo (LLM eval) and newman (Postman runner)","scripts":{},"devDependencies":{"newman":"^6.2.3","promptfoo":"^0.126.0"}}

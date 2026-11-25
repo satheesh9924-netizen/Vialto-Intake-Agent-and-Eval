@@ -1,0 +1,65 @@
+{
+  "model_profile": "v1",
+  "llm": "mock",
+  "judge": "heuristic-rules",
+  "created": "2026-11-25T12:32:33+00:00",
+  "dataset_size": 33,
+  "metrics": {
+    "classification_accuracy": {
+      "value": 0.9696969696969697,
+      "n": 33
+    },
+    "macro_f1": {
+      "value": 0.9696969696969697,
+      "n": 33
+    },
+    "silent_error_rate": {
+      "value": 0.0,
+      "n": 33
+    },
+    "field_f1": {
+      "value": 0.9797979797979798,
+      "n": 101
+    },
+    "field_precision": {
+      "value": 1.0,
+      "n": 101
+    },
+    "field_recall": {
+      "value": 0.9603960396039604,
+      "n": 101
+    },
+    "hallucination_rate": {
+      "value": 0.0,
+      "n": 97
+    },
+    "format_validity_rate": {
+      "value": 1.0,
+      "n": 97
+    },
+    "bad_case_rate": {
+      "value": 0.0,
+      "n": 33
+    },
+    "flag_rate": {
+      "value": 0.45454545454545453,
+      "n": 33
+    },
+    "consistency": {
+      "value": 1.0,
+      "n": 75
+    },
+    "judge_pass_rate": {
+      "value": 1.0,
+      "n": 28
+    },
+    "red_team_asr_guarded": {
+      "value": 0.08333333333333333,
+      "n": 12
+    },
+    "red_team_asr_unguarded": {
+      "value": 0.9166666666666666,
+      "n": 12
+    }
+  }
+}

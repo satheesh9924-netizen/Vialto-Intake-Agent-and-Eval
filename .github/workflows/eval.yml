@@ -1,0 +1,67 @@
+name: AI evaluation
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 3 * * *"        # nightly re-evaluation: catches drift even when no code changed
+  workflow_dispatch:
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    env:
+      DEEPEVAL_TELEMETRY_OPT_OUT: "YES"
+      PROMPTFOO_DISABLE_TELEMETRY: "1"
+      PROMPTFOO_PYTHON: python3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip }
+      - uses: actions/setup-node@v4
+        with: { node-version: "22" }
+      - name: Install OCR engine, Python and Node dependencies
+        run: |
+          sudo apt-get update && sudo apt-get install -y tesseract-ocr
+          pip install -r requirements.txt
+          npm ci --prefix tools
+
+      - name: pytest (scenarios, accuracy, red team, judge, drift, API, SQL, DeepEval, RAGAS, adapters, OCR)
+        run: python -m pytest --junitxml=results/junit.xml
+
+      - name: Release gate, plain pipeline agent (blocks the merge on regression vs baseline)
+        run: python run_evals.py --profile v1 --gate
+      - name: Release gate, LangGraph agent
+        run: python run_evals.py --agent langgraph --profile v1 --gate
+
+      - name: Postman collection with Newman
+        run: |
+          python -m uvicorn app.api:app --port 8000 --log-level warning &
+          sleep 3
+          tools/node_modules/.bin/newman run postman/intake.postman_collection.json --env-var runId=ci$GITHUB_RUN_ID
+
+      - name: promptfoo evals
+        run: |
+          python scripts/make_promptfoo.py
+          cd promptfoo && ../tools/node_modules/.bin/promptfoo eval -c promptfooconfig.yaml --no-cache --no-share -o ../results/promptfoo/ci.json
+
+      - name: Publish reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with: { name: eval-reports, path: results/ }
+
+  # Optional: the same gate against the real model. Needs a repository secret ANTHROPIC_API_KEY.
+  evaluate-real-model:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r requirements.txt anthropic
+      - run: python run_evals.py --llm claude --judge claude --out results/claude
+      - uses: actions/upload-artifact@v4
+        with: { name: eval-report-claude, path: results/claude }

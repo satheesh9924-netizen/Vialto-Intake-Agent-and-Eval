@@ -1,0 +1,8 @@
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"
+markers = [
+    "slow: takes about a minute (real OCR on rendered images).",
+    "known_residual: a documented, accepted weakness. Expected to fail; strict xfail turns an unexpected pass into an alert.",
+]

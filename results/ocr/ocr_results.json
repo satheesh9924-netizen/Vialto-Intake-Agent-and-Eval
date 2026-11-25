@@ -1,0 +1,65 @@
+[
+  {
+    "quality": "clean",
+    "ocr_similarity": 0.9987171584769668,
+    "classification_accuracy": 0.9696969696969697,
+    "field_f1": 0.98,
+    "flag_rate": 0.42424242424242425,
+    "bad_case_rate": 0.0,
+    "n": 33
+  },
+  {
+    "quality": "low_contrast",
+    "ocr_similarity": 0.9987171584769668,
+    "classification_accuracy": 0.9696969696969697,
+    "field_f1": 0.9748743718592964,
+    "flag_rate": 0.45454545454545453,
+    "bad_case_rate": 0.0,
+    "n": 33
+  },
+  {
+    "quality": "blur",
+    "ocr_similarity": 0.9980020720393192,
+    "classification_accuracy": 0.9696969696969697,
+    "field_f1": 0.9400000000000001,
+    "flag_rate": 0.48484848484848486,
+    "bad_case_rate": 0.030303030303030304,
+    "n": 33
+  },
+  {
+    "quality": "noise",
+    "ocr_similarity": 0.99399408177186,
+    "classification_accuracy": 0.9696969696969697,
+    "field_f1": 0.934010152284264,
+    "flag_rate": 0.48484848484848486,
+    "bad_case_rate": 0.06060606060606061,
+    "n": 33
+  },
+  {
+    "quality": "rotated",
+    "ocr_similarity": 0.9844215231450192,
+    "classification_accuracy": 0.9696969696969697,
+    "field_f1": 0.7978723404255319,
+    "flag_rate": 0.696969696969697,
+    "bad_case_rate": 0.12121212121212122,
+    "n": 33
+  },
+  {
+    "quality": "low_res",
+    "ocr_similarity": 0.998148677553994,
+    "classification_accuracy": 0.9696969696969697,
+    "field_f1": 0.9700000000000001,
+    "flag_rate": 0.42424242424242425,
+    "bad_case_rate": 0.030303030303030304,
+    "n": 33
+  },
+  {
+    "quality": "bad_scan",
+    "ocr_similarity": 0.28154327514854405,
+    "classification_accuracy": 0.18181818181818182,
+    "field_f1": 0.0,
+    "flag_rate": 1.0,
+    "bad_case_rate": 0.0,
+    "n": 33
+  }
+]
