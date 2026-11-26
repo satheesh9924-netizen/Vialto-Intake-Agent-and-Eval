@@ -23,9 +23,9 @@ jobs:
         with: { node-version: "22" }
       - name: Install OCR engine, Python and Node dependencies
         run: |
-          sudo apt-get update && sudo apt-get install -y tesseract-ocr
+          sudo apt-get update && sudo apt-get install -y tesseract-ocr fonts-dejavu-core
           pip install -r requirements.txt
-          npm ci --prefix tools
+          npm install --prefix tools --no-audit --no-fund
 
       - name: pytest (scenarios, accuracy, red team, judge, drift, API, SQL, DeepEval, RAGAS, adapters, OCR)
         run: python -m pytest --junitxml=results/junit.xml
